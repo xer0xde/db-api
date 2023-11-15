@@ -1,3 +1,5 @@
+// scraper.js
+
 const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 
@@ -8,7 +10,7 @@ async function searchForTime(desiredTime) {
         .build();
 
     try {
-        await driver.get('https://www.bahn.de/buchung/fahrplan/suche#sts=true&so=Bruchsal&zo=M%C3%BChlacker&kl=2&r=13:16:KLASSENLOS:1&soid=A%3D1%40O%3DBruchsal%40X%3D8589651%40Y%3D49124619%40U%3D81%40L%3D8000055%40B%3D1%40p%3D1699466899%40&zoid=A%3D1%40O%3DM%C3%BChlacker%40X%3D8846105%40Y%3D48953195%40U%3D81%40L%3D8000339%40B%3D1%40p%3D1699466899%40&sot=ST&zot=ST&soei=8000055&zoei=8000339&hd=2023-11-14T19:54:16&hza=D&ar=false&s=true&d=false&hz=%5B%5D&fm=false&bp=false');
+        await driver.get('https://www.bahn.de/buchung/fahrplan/suche#sts=true&so=M%C3%BChlacker&zo=Bruchsal&kl=2&r=13:16:KLASSENLOS:1&soid=A%3D1%40O%3DM%C3%BChlacker%40X%3D8846105%40Y%3D48953195%40U%3D81%40L%3D8000339%40B%3D1%40p%3D1699898151%40&zoid=A%3D1%40O%3DBruchsal%40X%3D8589651%40Y%3D49124619%40U%3D81%40L%3D8000055%40B%3D1%40p%3D1699898151%40&sot=ST&zot=ST&soei=8000339&zoei=8000055&hd=2023-11-15T18:02:44&hza=D&ar=false&s=true&d=false&hz=%5B%5D&fm=false&bp=false');
 
         // Wait for 5 seconds
         await driver.sleep(5000);
@@ -52,7 +54,6 @@ async function searchForTime(desiredTime) {
                     console.log('Die Pünktlichkeit konnte nicht erkannt werden.');
                 }
 
-                // Find and print the connection status
                 try {
                     const connectionStatusElement = await containerElement.findElement(By.css('.reise-ereignis-zusammenfassung__message-text'));
                     const connectionStatus = await connectionStatusElement.getText();
@@ -61,7 +62,6 @@ async function searchForTime(desiredTime) {
                     console.log('Verbindung Status nicht gefunden.');
                 }
 
-                // Break out of the loop since you found the desired time
                 break;
             }
         }
@@ -70,5 +70,5 @@ async function searchForTime(desiredTime) {
     }
 }
 
-// Call the function with the desired time
-searchForTime('21:30');
+// Export the function for use in other files
+module.exports = searchForTime;
