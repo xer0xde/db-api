@@ -1,7 +1,10 @@
-// main.js
-
 const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
+const axios = require('axios'); // Füge das axios-Modul hinzu
+const { MessageMedia } = require('whatsapp-web.js');
+
+const OPENWEATHER_API_KEY = 'd6c35ceb3e88811c16e96bad97d49130'; // Ersetze 'DEIN_API_SCHLÜSSEL' durch deinen OpenWeather API-Schlüssel
+const OPENWEATHER_LOCATION = 'Bruchsal'; // Ersetze 'DeinOrt' durch den gewünschten Ort für das Wetter
 
 async function searchForTime(desiredTime, client, groupId) {
     let driver = await new Builder()
@@ -41,15 +44,40 @@ async function searchForTime(desiredTime, client, groupId) {
                 if (isPunctual) {
                     console.log('Die Uhrzeit ist pünktlich.');
                     departureTime = new Date().toLocaleTimeString('de-DE');
-                    await client.sendMessage(groupId, `‼️ EILMELDUNG - ${departureTime}\nDer Zug nach Bruchsal RB17B hat keine Verspätung und fährt wie geplant um ${departureTime} Uhr los.`);
+
+                    // Hier füge den OpenWeather API-Aufruf ein
+                    try {
+                        const response = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
+                            params: {
+                                q: 'Bruchsal',
+                                appid: 'd6c35ceb3e88811c16e96bad97d49130',
+                                units: 'metric', // Einheit auf Celsius ändern
+                                lang: 'de'       // Sprache auf Deutsch ändern
+                            }
+                        });
+
+                        const weatherDescription = response.data.weather[0].description;
+                        const temperature = response.data.main.temp;
+                        const screenshotFileName = `screenshot_${new Date().getTime()}`;
+                        await takeScreenshot(driver, screenshotFileName);
+                        const media = MessageMedia.fromFilePath(`${screenshotFileName}.png`);
+                        await client.sendMessage(groupId, `Guten Morgen,\nes ist der ${new Date().toLocaleDateString('de-DE')}, heute ist ${getGermanDayOfWeek(new Date())}. Das Wetter wird heute ${weatherDescription} und es wird heute Temperaturen bis zu ${temperature}°C haben.\n Der Zug kommt pünktlich`, {
+                            media: media
+                        });
+                    } catch (error) {
+                        console.error('Fehler beim Abrufen der Wetterdaten:', error);
+                    }
                 } else if (isDelayed) {
                     console.log('Die Uhrzeit ist unpünktlich.');
 
                     const echtzeitElement = await containerElement.findElement(By.css('.zeit-anzeige__echtzeit--unpuenktlich'));
-
                     const delayText = await echtzeitElement.getText();
-
-                    await client.sendMessage(groupId, `‼️ EILMELDUNG - ${new Date().toLocaleTimeString('de-DE')}\nDer Zug nach Bruchsal RB17B hat Verspätung und fährt erst um ${delayText.trim()} später los.`);
+                    const screenshotFileName = `screenshot_${new Date().getTime()}`;
+                    await takeScreenshot(driver, screenshotFileName);
+                    const media = MessageMedia.fromFilePath(`${screenshotFileName}.png`);
+                    await client.sendMessage(groupId, `‼️ EILMELDUNG - ${new Date().toLocaleTimeString('de-DE')}\nDer Zug nach Bruchsal RB17B hat Verspätung und fährt erst um ${delayText.trim()} später los.`, {
+                        media: media
+                    });
                 } else {
                     console.log('Die Pünktlichkeit konnte nicht erkannt werden.');
                     await client.sendMessage(groupId, 'Die Pünktlichkeit konnte nicht erkannt werden.');
@@ -66,10 +94,21 @@ async function searchForTime(desiredTime, client, groupId) {
                 }
             }
         }
+    } catch (error) {
+        console.error('Fehler beim Ausführen des Programms:', error);
     } finally {
         await driver.quit();
     }
 }
 
-// Export the function for use in other files
+function getGermanDayOfWeek(date) {
+    const daysOfWeek = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+    return daysOfWeek[date.getDay()];
+}
+
+async function takeScreenshot(driver, fileName) {
+    const screenshot = await driver.takeScreenshot();
+    require('fs').writeFileSync(`${fileName}.png`, screenshot, 'base64');
+}
+// Exportiere die Funktion für die Verwendung in anderen Dateien
 module.exports = { searchForTime };

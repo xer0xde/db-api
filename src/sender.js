@@ -26,7 +26,7 @@ client.on('ready', () => {
     const groupId = '120363199519745800@g.us';
 
     // Call the function to search for time
-    searchForTime('19:22', client, groupId); // Pass the client and group ID as arguments
+    searchForTime('20:15', client, groupId); // Pass the client and group ID as arguments
 });
 client.on('message', async (message) => {
     // Log the received message
@@ -53,6 +53,7 @@ client.on('authenticated', (session) => {
         fs.writeFileSync(sessionDataPath, JSON.stringify(session));
     }
 });
+
 // Get a list of all chats
 
 client.initialize();
