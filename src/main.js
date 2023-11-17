@@ -5,6 +5,28 @@ const { MessageMedia } = require('whatsapp-web.js');
 
 const OPENWEATHER_API_KEY = 'd6c35ceb3e88811c16e96bad97d49130'; // Ersetze 'DEIN_API_SCHLÜSSEL' durch deinen OpenWeather API-Schlüssel
 const OPENWEATHER_LOCATION = 'Bruchsal'; // Ersetze 'DeinOrt' durch den gewünschten Ort für das Wetter
+async function startAutomation(client, groupId) {
+    // Setze das Intervall auf 60 Sekunden (60000 Millisekunden)
+    const intervalId = setInterval(async () => {
+        // Rufe die aktuelle Uhrzeit ab
+        const currentTime = new Date();
+        console.log(`Aktuelle Uhrzeit: ${currentTime.toLocaleTimeString('de-DE')}`);
+
+        // Überprüfe, ob es nach 4:30 Uhr ist
+        if (currentTime.getHours() > 22 || (currentTime.getHours() === 22 && currentTime.getMinutes() >= 20)) {
+            console.log('Es ist nach 4:30 Uhr. Führe das Skript aus.');
+
+            // Führe das Skript aus
+            const result = await searchForTime('20:15', client, groupId);
+
+            // Überprüfe das Ergebnis des Skripts
+            if (result === 'Statusänderung erkannt') {
+                console.log('Statusänderung erkannt. Beende das Intervall.');
+                clearInterval(intervalId); // Stoppe das Intervall mit der globalen Intervall-ID
+            }
+        }
+    }, 6000); // 60000 Millisekunden = 60 Sekunden
+}
 
 async function searchForTime(desiredTime, client, groupId) {
     let driver = await new Builder()
@@ -40,6 +62,7 @@ async function searchForTime(desiredTime, client, groupId) {
 
                 let connectionStatus;
                 let departureTime;
+                let intervalId;
 
                 if (isPunctual) {
                     console.log('Die Uhrzeit ist pünktlich.');
@@ -64,6 +87,7 @@ async function searchForTime(desiredTime, client, groupId) {
                         await client.sendMessage(groupId, `Guten Morgen,\nes ist der ${new Date().toLocaleDateString('de-DE')}, heute ist ${getGermanDayOfWeek(new Date())}. Das Wetter wird heute ${weatherDescription} und es wird heute Temperaturen bis zu ${temperature}°C haben.\n Der Zug kommt pünktlich`, {
                             media: media
                         });
+                        return 'Statusänderung erkannt';
                     } catch (error) {
                         console.error('Fehler beim Abrufen der Wetterdaten:', error);
                     }
@@ -78,6 +102,7 @@ async function searchForTime(desiredTime, client, groupId) {
                     await client.sendMessage(groupId, `‼️ EILMELDUNG - ${new Date().toLocaleTimeString('de-DE')}\nDer Zug nach Bruchsal RB17B hat Verspätung und fährt erst um ${delayText.trim()} später los.`, {
                         media: media
                     });
+                    return 'Statusänderung erkannt';
                 } else {
                     console.log('Die Pünktlichkeit konnte nicht erkannt werden.');
                     await client.sendMessage(groupId, 'Die Pünktlichkeit konnte nicht erkannt werden.');
@@ -108,7 +133,7 @@ function getGermanDayOfWeek(date) {
 
 async function takeScreenshot(driver, fileName) {
     const screenshot = await driver.takeScreenshot();
-    require('fs').writeFileSync(`${fileName}.png`, screenshot, 'base64');
+    require('fs').writeFileSync(`./screenshots/${fileName}.png`, screenshot, 'base64');
 }
-// Exportiere die Funktion für die Verwendung in anderen Dateien
-module.exports = { searchForTime };
+// Exportiere die Funktion für die Verwendung in anderen
+module.exports = { startAutomation };

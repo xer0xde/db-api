@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
-const { searchForTime } = require('./main'); // Correct the import statement
+const { startAutomation } = require('./main'); // Correct the import statement
 
 let sessionData;
 const sessionDataPath = './session-data.json';
@@ -26,7 +26,7 @@ client.on('ready', () => {
     const groupId = '120363199519745800@g.us';
 
     // Call the function to search for time
-    searchForTime('20:15', client, groupId); // Pass the client and group ID as arguments
+    startAutomation(client, groupId); // Passe die Argumente entsprechend an
 });
 client.on('message', async (message) => {
     // Log the received message
