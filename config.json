@@ -1,0 +1,10 @@
+{
+  "TRAIN_LINK": "https://www.bahn.de/p/view/angebot/fernverkehr.shtml",
+  "STARTING_TIME": "23:28",
+  "OPENWEATHER_API_KEY": "d6c35ceb3e88811c16e96bad97d49130",
+  "OPENWEATHER_LOCATION": "Bruchsal",
+  "GROUP_ID": "DEINE_GRUPPEN_ID",
+  "INTERVAL_TIME": 60000,
+  "START_TIME_HOUR": "23",
+  "START_TIME_MINUTE": "28"
+}

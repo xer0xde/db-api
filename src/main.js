@@ -2,9 +2,9 @@ const { Builder, By } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 const axios = require('axios'); // Füge das axios-Modul hinzu
 const { MessageMedia } = require('whatsapp-web.js');
-
-const OPENWEATHER_API_KEY = 'd6c35ceb3e88811c16e96bad97d49130';
-const OPENWEATHER_LOCATION = 'Bruchsal';
+const config = require('../config.json');
+const OPENWEATHER_API_KEY = config.OPENWEATHER_API_KEY;
+const OPENWEATHER_LOCATION = config.OPENWEATHER_LOCATION;
 async function startAutomation(client, groupId) {
     let isFirstNotificationSent = false;
 
@@ -12,11 +12,11 @@ async function startAutomation(client, groupId) {
         const currentTime = new Date();
         console.log(`Aktuelle Uhrzeit: ${currentTime.toLocaleTimeString('de-DE')}`);
 
-        if (currentTime.getHours() > 23 || (currentTime.getHours() === 23 && currentTime.getMinutes() >= 9)) {
+        if (currentTime.getHours() > config.START_TIME_HOUR || (currentTime.getHours() === config.START_TIME_HOUR && currentTime.getMinutes() >= config.START_TIME_MINUTE)) {
             console.log('Es ist nach 4:30 Uhr. Führe das Skript aus.');
 
-            if (!isFirstNotificationSent && currentTime.getHours() === 23 && currentTime.getMinutes() === 9) {
-                const result = await searchForTime('21:22', client, groupId);
+            if (!isFirstNotificationSent && currentTime.getHours() === config.START_TIME_HOUR && currentTime.getMinutes() === config.START_TIME_MINUTE) {
+                const result = await searchForTime(config.STARTING_TIME, client, groupId);
 
                 if (result === 'Statusänderung erkannt') {
                     console.log('Statusänderung erkannt. Beende das Intervall.');
@@ -37,7 +37,7 @@ async function startAutomation(client, groupId) {
                 }
             }
         }
-    }, 60000);
+    }, config.INTERVAL_TIME);
 }
 
 
@@ -48,7 +48,7 @@ async function searchForTime(desiredTime, client, groupId) {
         .build();
 
     try {
-        await driver.get('https://www.bahn.de/buchung/fahrplan/suche#sts=true&so=Bretten&zo=Bruchsal&kl=2&r=13:16:KLASSENLOS:1&soid=A%3D1%40O%3DBretten%40X%3D8693450%40Y%3D49036903%40U%3D81%40L%3D8000053%40B%3D1%40p%3D1700073955%40&zoid=A%3D1%40O%3DBruchsal%40X%3D8589651%40Y%3D49124619%40U%3D80%40L%3D8000055%40B%3D1%40p%3D1700079959%40&sot=ST&zot=ST&soei=8000053&zoei=8000055&hd=2023-11-18T21:15:24&hza=D&ar=false&s=true&d=false&hz=%5B%5D&fm=false&bp=false');
+        await driver.get(config.TRAIN_LINK);
 
         await driver.sleep(5000);
 
@@ -84,7 +84,7 @@ async function searchForTime(desiredTime, client, groupId) {
                     try {
                         const response = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
                             params: {
-                                q: 'Bruchsal',
+                                q: config.OPENWEATHER_LOCATION,
                                 appid: OPENWEATHER_API_KEY,
                                 units: 'metric',
                                 lang: 'de'
