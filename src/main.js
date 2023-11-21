@@ -10,10 +10,12 @@ async function startAutomation(client, groupId) {
 
     const intervalId = setInterval(async () => {
         const currentTime = new Date();
-        console.log(`Aktuelle Uhrzeit: ${currentTime.toLocaleTimeString('de-DE')}`);
 
-        if (currentTime.getHours() > config.START_TIME_HOUR || (currentTime.getHours() === config.START_TIME_HOUR && currentTime.getMinutes() >= config.START_TIME_MINUTE)) {
-            console.log('Es ist nach 4:30 Uhr. Führe das Skript aus.');
+
+        const isWeekday = !config.WEEKDAYS_ONLY || (config.WEEKDAYS_ONLY && currentTime.getDay() >= 1 && currentTime.getDay() <= 5);
+
+        if (isWeekday && currentTime.getHours() > config.START_TIME_HOUR || (currentTime.getHours() === config.START_TIME_HOUR && currentTime.getMinutes() >= config.START_TIME_MINUTE)) {
+            console.log('Es ist nach der geplanten Uhrzeit an einem Werktag. Führe das Skript aus.');
 
             if (!isFirstNotificationSent && currentTime.getHours() === config.START_TIME_HOUR && currentTime.getMinutes() === config.START_TIME_MINUTE) {
                 const result = await searchForTime(config.STARTING_TIME, client, groupId);
@@ -27,10 +29,10 @@ async function startAutomation(client, groupId) {
             }
 
             if (isFirstNotificationSent && currentTime.getHours() === 6) {
-                // Führe das Skript erneut aus
+
                 const result = await searchForTime('22:02', client, groupId);
 
-                // Überprüfe das Ergebnis des Skripts
+
                 if (result === 'Statusänderung erkannt') {
                     console.log('Statusänderung erkannt. Beende das Intervall.');
                     clearInterval(intervalId);
@@ -47,8 +49,13 @@ async function searchForTime(desiredTime, client, groupId) {
         .setChromeOptions(new chrome.Options().windowSize({ width: 1024, height: 768 }))
         .build();
 
-    try {
-        await driver.get(config.TRAIN_LINK);
+       try {
+
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString().split('T')[0];
+        const dynamicLink = config.TRAIN_LINK_TEMPLATE.replace('__DATE__', formattedDate);
+
+        await driver.get(dynamicLink);
 
         await driver.sleep(5000);
 
