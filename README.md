@@ -43,14 +43,14 @@ Run the script with the following command:
 
 ```bash
 node sender.js
-
+```
 
 The script will automatically execute based on the configured starting time and check the train status.
 
 ## Configuration
 Edit the config.json file to customize the script behavior. Configuration options include:
 
-- TRAIN_LINK: Link to the train schedule page.
+- TRAIN_LINK_TEMPLATE: Link to the train schedule page.
 - STARTING_TIME: Time to start checking the train status.
 - OPENWEATHER_API_KEY: API key for OpenWeatherMap.
 - OPENWEATHER_LOCATION: Location for weather information.
@@ -58,6 +58,7 @@ Edit the config.json file to customize the script behavior. Configuration option
 - INTERVAL_TIME: Interval time for script execution.
 - START_TIME_HOUR: Hour to start the script.
 - START_TIME_MINUTE: Minute to start the script.
+- WEEKDAYS_ONLY: Check if it's a Workday.
 
 
 # License
