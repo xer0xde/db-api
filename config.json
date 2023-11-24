@@ -1,11 +1,11 @@
 {
-  "TRAIN_LINK_TEMPLATE": "https://www.bahn.de/buchung/fahrplan/suche#sts=true&so=Bruchsal&zo=Bretten&kl=2&r=13:16:KLASSENLOS:1&soid=A%3D1%40O%3DBruchsal%40X%3D8589651%40Y%3D49124619%40U%3D80%40L%3D8000055%40B%3D1%40p%3D1700685770%40&zoid=A%3D1%40O%3DBretten%40X%3D8693450%40Y%3D49036903%40U%3D81%40L%3D8000053%40B%3D1%40p%3D1700680216%40&sot=ST&zot=ST&soei=8000055&zoei=8000053&hd=__DATE__T21:54:12&hza=D&ar=false&s=true&d=false&hz=%5B%5D&fm=false&bp=false",
-  "STARTING_TIME": "22:51",
-  "OPENWEATHER_API_KEY": "d6c35ceb3e88811c16e96bad97d49130",
-  "OPENWEATHER_LOCATION": "Bruchsal",
-  "GROUP_ID": "120363199519745800@g.us",
+  "TRAIN_LINK_TEMPLATE": "Your Train Link Template",
+  "STARTING_TIME": "Leaving Time",
+  "OPENWEATHER_API_KEY": "Your API Key",
+  "OPENWEATHER_LOCATION": "Your Wheater Destination",
+  "GROUP_ID": "Your Group ID",
   "INTERVAL_TIME": 10000,
-  "START_TIME_HOUR": 21,
-  "START_TIME_MINUTE": 5,
+  "START_TIME_HOUR": 0,
+  "START_TIME_MINUTE": 0,
   "WEEKDAYS_ONLY": false
 }
