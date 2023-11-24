@@ -2,6 +2,8 @@ const fs = require('fs');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const { startAutomation } = require('./main'); // Correct the import statement
+const config = require('../config.json');
+
 
 let sessionData;
 const sessionDataPath = './session-data.json';
@@ -23,15 +25,12 @@ client.on('ready', () => {
     console.log('Client is ready!');
 
     // Modify this line to use the actual group ID
-    const groupId = '120363199519745800@g.us';
+    const groupId = config.GROUP_ID;
 
     // Call the function to search for time
     startAutomation(client, groupId); // Passe die Argumente entsprechend an
 });
-client.on('message', async (message) => {
-    // Log the received message
-    console.log(`Received message: ${message.body}`);
-});
+
 
 client.on('qr', (qrCode) => {
     // Display QR code in the console
